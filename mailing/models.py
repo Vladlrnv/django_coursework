@@ -16,6 +16,9 @@ class Recipient(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['email', 'owner'], name='unique_recipient_per_owner')
         ]
+        permissions = [
+            ("can_moderate_mail", "Can moderate mail"),
+        ]
 
     def __str__(self):
         return self.email
@@ -26,6 +29,11 @@ class Mail(models.Model):
     theme = models.CharField(verbose_name='Тема письма', max_length=50)
     body_mail = models.TextField(verbose_name='Тело письма')
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mails', verbose_name='Владелец')
+
+    class Meta:
+        permissions = [
+            ("can_moderate_mail", "Can moderate mail"),
+        ]
 
     def __str__(self):
         return self.theme

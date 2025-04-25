@@ -35,6 +35,7 @@ class MailingListView(ListView):
     model = Mailing
     template_name = "home.html"
     context_object_name = 'mailings'
+    permission_required = 'mailing.can_moderate_mail'
 
     def get_context_data(self, **kwargs):
         """
@@ -107,7 +108,8 @@ class MailingListView(ListView):
 
     def get_queryset(self):
         """ Возвращает все объекты владельца """
-        if self.request.user.groups.filter(name='moderator').exists():
+        user = self.request.user
+        if user.has_perm(['mailing.can_moderate_mail']):
             return Mailing.objects.all()
         if self.request.user.is_authenticated:
             return Mailing.objects.filter(owner=self.request.user)
@@ -171,6 +173,7 @@ class SendMessageDetailView(DetailView):
     """
     model = Mailing
     template_name = 'send_handmade.html'
+    permission_required = 'mailing.can_moderate_mail'
 
     def post(self, request, *args, **kwargs):
         mailing = self.get_object()  # Получаем объект рассылки
